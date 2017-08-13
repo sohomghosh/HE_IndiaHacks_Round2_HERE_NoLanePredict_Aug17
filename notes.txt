@@ -1,0 +1,99 @@
+################ TO EXPLORE ############
+onehotencoded sklearn
+
+######################## TO DO ###############################
+/(after NO-USE)/ 1) Missing value treat
+[done, worsened accuracy] 2) Outlier remove: -> count number of them then decide := distFromLaneLineOnLeft >40, distFromLaneLineOnLeft >60, laneLineLength>2000, max_lat_diff>.03, max_long_diff >.02, noOfIntersectingLaneLinesLeft > 10, noOfIntersectingLaneLinesRight >9, num_laneLineCoordinates > 300, roadLength>1500, 
+3) Feature importances study
+[done] 4) Relation univariate analysis do
+
+
+Feature Engg (New Features)
+[Worsened results; Removed it] 1) totalLaneLines -1
+[Validation set accuracy decreased, test set accuracy improved, may overfit, Kept it] 2) From laneLineCoordinates: split by '|' count number of times it occur
+[Validation set accuracy improved, test set accuracy improved, Nice!, Kept it] 3) Largest difference logitudes of laneLineCoordinates
+[Validation set accuracy improved, test set accuracy improved, Nice!, Kept it] 4) Largest difference lattitudes of laneLineCoordinates
+[Validation set accuracy decreased, test set accuracy improved, may overfit, Kept it] 5) Smallest difference logitudes of laneLineCoordinates
+[Validation set accuracy decreased, test set accuracy improved, may overfit, Kept it] 6) Smallest difference lattitudes of laneLineCoordinates
+//(after) 5) Play around with lattitudes & logitudes
+//(after) 6) Play around with Total lane lines right/left/total
+7) 
+
+
+Modeling
+2) h2o-RandomForest classification type: confusion_matrix then f1
+3) h2o-GBM classification type
+5) Light GBM
+6) catboost
+7) Ensemble all above
+**)FOR FINAL SUBMISSION: v4, v5 run multiple times with multiple random_states and check accuracies
+
+[done] 1) XGBoost classification type; Tune it
+// 4) h2o-DeepNet classification type then round off to nearest integer; Also try keras deep net
+
+/(after NO-USE)/ 8) May try to predict distance between roadCoordinates for the test set and use it as a feature
+[done] 9) Multiple csv files use for majority voting: use sub4,sub5,sub6,sub9,sub11,sub15,sub18,sub20,sub22,sub23,sub27
+
+
+
+##############################################################
+
+training data: 28914 rows 
+test data: 2493 rows
+Public-Private: 40-60
+F1-score; F1 = 2 * (precision * recall) / (precision + recall)
+http://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html
+h2o gbm: https://github.com/h2oai/h2o-3/blob/master/h2o-docs/src/product/tutorials/gbm/gbmTuning.ipynb
+No common roadid between train & test
+
+Data cleaning:
+remove space from name of columns
+
+Numeric Features Use as it is
+1) totalLaneLines
+2) totalLinesOnLeft
+3) totalLaneLinesOnRight 
+4) distFromLaneLineOnLeft 
+5) distFromLaneLineOnRight
+6) laneLineLength  
+7) roadLength  
+8) noOfIntersectingLaneLinesLeft
+9) noOfIntersectingLaneLinesRight
+
+
+
+Categorical Features Use after replacement making numeric
+1) num_roadCategory
+2) tr_rd_cat
+3) fl_rd_cat
+
+
+Features Ignore
+1) roadId
+2) laneLineId
+3) laneLineCoordinates
+4) roadCoordinates
+5) isIntersectingWithRoadGeometry [Categorical]
+6) roadCategory [Categorical]
+
+Label
+1) noOfLanes
+
+
+==> labels.csv <==
+roadId, roadCoordinates, noOfLanes
+6515927525, 9.23293 48.99365|9.23295 48.99401|9.23298 48.99449|9.233 48.99478|9.23301 48.99502,4
+
+==> train.csv <==
+roadId, totalLaneLines, laneLineId, laneLineCoordinates, totalLinesOnLeft, totalLaneLinesOnRight, distFromLaneLineOnLeft, distFromLaneLineOnRight, laneLineLength, roadLength, noOfIntersectingLaneLinesLeft, noOfIntersectingLaneLinesRight, isIntersectingWithRoadGeometry, roadCategory
+3177248677,3,X3177248677, 11.117636626741222 49.43799310961545|11.117611669959137 49.43795706881033,2,0,3.863433276, ,4.396337218,40.57071046,0,0, false,2
+
+==> test.csv <==
+roadId, totalLaneLines, laneLineId, laneLineCoordinates, totalLinesOnLeft, totalLaneLinesOnRight, distFromLaneLineOnLeft, distFromLaneLineOnRight, laneLineLength, roadLength, noOfIntersectingLaneLinesLeft, noOfIntersectingLaneLinesRight, isIntersectingWithRoadGeometry, roadCategory
+291531296,5,X291531296, 11.329899604343693 43.72956824243773|11.330049576974398 43.72956949363139,2,2,5.655398294,3.49899823,12.05459746,12.05600373,0,0, false,1
+
+==> sample_submission.csv <==
+roadId,noOfLanes
+291531296,1
+
+

@@ -1,0 +1,25 @@
+Tools used: Python3
+
+Cleaning
+1) Removed spaces from column names
+2) Columns are transformed into numeric
+
+Feature Engineering
+1) Converting isIntersectingWithRoadGeometry to OneHotEncoded form
+2) Reserving the weightage of roadCategory as (1 being the broadest, for e.g. highways)
+3) Removed features after checking importance by h2o gbm: 'noOfIntersectingLaneLinesLeft','noOfIntersectingLaneLinesRight','fl_rd_cat'
+4) Added maximum, minimum distances between lattitudes, longitudes, number of lane lines
+
+Outlier
+1) From plots removed outliers, not much affect on accuracy
+
+Label Transformation
+1) Subtracting 1 from training data with label noOfLanes to make it ready for xgboost input
+
+Modeling
+1) XG-Boost
+2) h2o-gbm
+3) ENsembing best results 
+
+Prediction
+1) From the various predictions of noOfLanes done by the model for each roadId, the most occuring is selected
