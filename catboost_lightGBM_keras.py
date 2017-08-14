@@ -184,7 +184,6 @@ For best fit
 
 
 ################################# KERAS #############################
-### TO BE UPDATED
 ### References: http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
 ### http://machinelearningmastery.com/grid-search-hyperparameters-deep-learning-models-python-keras/
 ### http://machinelearningmastery.com/regression-tutorial-keras-deep-learning-library-python/
