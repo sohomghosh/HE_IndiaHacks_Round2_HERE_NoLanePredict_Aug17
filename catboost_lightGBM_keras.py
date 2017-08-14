@@ -194,17 +194,26 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.callbacks import EarlyStopping
 from keras.utils import to_categorical
-#from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler
 
+X_train[features].isnull().sum()
+#The following fields have null values
+#distFromLaneLineOnLeft            1087
+#distFromLaneLineOnRight           1125
+#X_train[features].dropna(inplace=True)
+#fill missing values with mean column values
+X_train[features]=X_train[features].fillna(X_train[features].mean(), inplace=True)
 
-#model = Sequential()
+X_test[features].isnull().sum()
+#The following fields have null values
+#distFromLaneLineOnLeft            400
+#distFromLaneLineOnRight           415
+#X_test[features].dropna(inplace=True)
+X_test[features]=X_test[features].fillna(X_test[features].mean(), inplace=True)
 
-#model.add(Dense(8, activation='relu'))
-#model.add(Dense(1, activation='sigmoid'))
-
-####Standardize data before scaling
-#scaler = StandardScaler().fit(X_train[features])
-#strain = scaler.transform(X_train[features])
+#####Standardize data before fitting
+scaler = StandardScaler().fit(X_train[features].as_matrix())
+strain = scaler.transform(X_train[features].as_matrix())
 #stest = scaler.transform(X_test[features])
 
 #One hot encoder
@@ -217,28 +226,20 @@ model = Sequential()
 model.add(Dense(28, activation = 'relu', input_shape = (input_dim,))) #layer 1
 model.add(Dense(30, activation = 'relu')) #layer 2
 model.add(Dense(classes, activation = 'sigmoid')) #output
-model.compile(optimizer = 'adam', loss='binary_crossentropy',metrics = ['accuracy'])
-callback = EarlyStopping(monitor='val_acc',patience=3)
-model.fit(X_train[features],Y_train, 100, 50, callbacks=[callback],validation_data=(X_valid[features], Y_valid),shuffle=True)
-
-
-model = Sequential()
-model.add(Dense(12, input_dim=input_dim, activation='relu'))#12 neurons in first layer with number of features = input_dim
-#model.add(Dense(100, activation = 'relu', input_shape = (input_dim,))) #layer 1
-#model.add(Dense(30, activation = 'relu')) #layer 2
-model.add(Dense(classes, activation = 'sigmoid')) #output
-model.compile(optimizer = 'adam', loss='binary_crossentropy',metrics = ['accuracy'])
+model.compile(optimizer = 'adam', loss='categorical_crossentropy',metrics = ['accuracy'])
 
 callback = EarlyStopping(monitor='val_acc',patience=3)
+model.fit(X_train[features].as_matrix(),Y_train, epochs=100, batch_size=50, callbacks=[callback],validation_data=(X_valid[features].as_matrix(), Y_valid),shuffle=True)
+#Need to transform pandas dataframe to matrix to give it input to keras model
 
-model.fit(X_train[features], X_train['noOfLanes'], epochs=150, batch_size=10)
-#model.fit(X_train[features], X_train['noOfLanes'], epochs=100, batch_size=5, callbacks=[callback],validation_data=(X_valid[features], X_valid['noOfLanes']),shuffle=True)
+model.summary()
+
 
 # check validation accuracy
-vpreds = model.predict_proba(X_valid[features])[:,1]
+vpreds_probs = model.predict_proba(X_valid[features].as_matrix())[:,1]
+vpreds = model.predict(X_valid[features].as_matrix())[:,1]
 roc_auc_score(y_true = X_valid[noOfLanes], y_score=vpreds)
 
 # predict on test data
-test_preds = model.predict_proba(X_test[features])[:,1]
-
-test_class = model.predict(X_test[features])
+test_pred_probs = model.predict_proba(X_test[features])[:,1]
+test_pred_class = model.predict(X_test[features])
