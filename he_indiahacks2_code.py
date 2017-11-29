@@ -1,3 +1,4 @@
+#import random
 import pandas as pd
 import numpy as np
 from sklearn.metrics import f1_score
@@ -185,7 +186,11 @@ train_set['distFromLaneLineOnRight']=pd.to_numeric(pd.Series(train_set['distFrom
 test['distFromLaneLineOnLeft']=pd.to_numeric(pd.Series(test['distFromLaneLineOnLeft']),errors='coerce')
 test['distFromLaneLineOnRight']=pd.to_numeric(pd.Series(test['distFromLaneLineOnRight']),errors='coerce')
 
-
+'''
+train_ids = random.sample(list(data.index),int(.8*len(data.index)))
+train = data[data.index.isin(train_ids)]
+valid = data[~data.index.isin(train_ids)]
+'''
 X_train=train_set.sample(frac=0.2, replace=False,random_state=44)
 X_valid=pd.concat([train_set, X_train]).drop_duplicates(keep=False)
 X_test=test
